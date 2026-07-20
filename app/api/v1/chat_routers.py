@@ -1,12 +1,14 @@
 from fastapi import APIRouter
 
-from app.schemas.ChatModels import ChatResponse, ChatRequest
+from app.core.chat_config import ChatServiceDependency
+from app.schemas.ChatModels import ChatRequest, ChatResponse
 
 router = APIRouter(prefix="/ask/cheese", tags=["cheese"])
 
-@router.post("", response_model=ChatResponse)
-async def cheese_ask(request: ChatRequest):
-    message_id = request.message_id
-    response = "Success"
-    response = ChatResponse(message_id=message_id, response=response)
-    return response.__dict__
+# app/api/v1/chat.py
+
+from fastapi import APIRouter, status
+
+@router.post("", response_model=ChatResponse, status_code=status.HTTP_200_OK,)
+async def ask_question(request: ChatRequest, chat_service: ChatServiceDependency,) -> ChatResponse:
+    return await chat_service.ask(request)
