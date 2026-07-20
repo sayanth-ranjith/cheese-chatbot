@@ -36,4 +36,6 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    # The value is loaded from GROQ_API_KEY/.env at runtime.  Pydantic's
+    # mypy plugin does not account for fields populated through aliases.
+    return Settings()  # type: ignore[call-arg]
