@@ -35,3 +35,4 @@ This project is being built with the assistance of Claude Code.
 ## Claude x Codex
 
 Claude and Codex have been actively contributing too lol as always.
+Claude has co authored so has codex too.
