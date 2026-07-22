@@ -31,3 +31,7 @@ It is my first AI project, and I'm building it to learn modern AI engineering co
 ## Development
 
 This project is being built with the assistance of Claude Code.
+
+## Claude x Codex
+
+Claude and Codex have been actively contributing too lol as always.
