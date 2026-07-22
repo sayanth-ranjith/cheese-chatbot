@@ -27,3 +27,7 @@ The chatbot uses a Retrieval-Augmented Generation (RAG) architecture, where it r
 🚧 This project is currently under active development.
 
 It is my first AI project, and I'm building it to learn modern AI engineering concepts such as RAG, vector databases, embeddings, prompt engineering, and agentic workflows while creating something genuinely useful for CheeseRetry users.
+
+## Development
+
+This project is being built with the assistance of Claude Code.
