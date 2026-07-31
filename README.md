@@ -1,8 +1,15 @@
 # 🧀 Cheese Chatbot
 
+[![Build Status](https://github.com/sayanth-ranjith/cheese-chatbot/actions/workflows/ci.yml/badge.svg)](https://github.com/sayanth-ranjith/cheese-chatbot/actions)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.sayanth-ranjith/cheese-retry-core.svg)](https://search.maven.org/search?q=g:io.github.sayanth-ranjith%20AND%20a:cheese-retry-core)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Language: Java](https://img.shields.io/badge/language-Java-007396.svg)](https://www.java.com/)
+[![GitHub issues](https://img.shields.io/github/issues/sayanth-ranjith/cheese-chatbot)](https://github.com/sayanth-ranjith/cheese-chatbot/issues)
+[![GitHub stars](https://img.shields.io/github/stars/sayanth-ranjith/cheese-chatbot?style=social)](https://github.com/sayanth-ranjith/cheese-chatbot/stargazers)
+
 Cheese Chatbot is a work-in-progress AI assistant built to help developers understand and use the **CheeseRetry** library.
 
-The chatbot uses a Retrieval-Augmented Generation (RAG) architecture, where it retrieves relevant information from a knowledge base containing CheeseRetry documentation, source code, and examples before generating responses. This helps provide answers that are grounded in the library rather than relying solely on the language model's pre-trained knowledge.
+The chatbot uses a Retrieval-Augmented Generation (RAG) architecture, where it retrieves relevant information from a knowledge base containing CheeseRetry documentation, source code, and examples before answering developer questions.
 
 ## Planned Features
 
