@@ -27,6 +27,19 @@ class Settings(BaseSettings):
         validation_alias="GROQ_MODEL"
     )
 
+    # -------------------------------------------------
+    # Jina
+    # -------------------------------------------------
+
+    jina_api_key: SecretStr = Field(
+        validation_alias="JINA_API_KEY"
+    )
+
+    jina_model: str = Field(
+        default="jina-embeddings-v3",
+        validation_alias="JINA_MODEL"
+    )
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

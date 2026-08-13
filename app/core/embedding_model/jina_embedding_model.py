@@ -28,6 +28,10 @@ class JinaEmbeddingModel(EmbeddingModel):
             },
         )
 
+    @property
+    def model_name(self) -> str:
+        return self._model_name
+
     def embed_documents(
         self,
         documents: list[Document],

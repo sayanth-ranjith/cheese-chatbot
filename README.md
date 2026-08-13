@@ -32,6 +32,17 @@ It is my first AI project, and I'm building it to learn modern AI engineering co
 
 This project is being built with the assistance of Claude Code.
 
+### Run the API
+
+From the repository root, start the FastAPI application with:
+
+```powershell
+uvicorn app.main:app --reload
+```
+
+The `app.` prefix is required because the ASGI entry point is located at
+`app/main.py`, rather than at a root-level `main.py`.
+
 ## Claude x Codex
 
 Claude and Codex have been actively contributing too lol as always.
