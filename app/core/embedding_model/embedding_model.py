@@ -5,6 +5,11 @@ from app.core.document_loader.document_loader import Document
 
 class EmbeddingModel(ABC):
 
+    @property
+    @abstractmethod
+    def model_name(self) -> str:
+        raise NotImplementedError
+
     @abstractmethod
     def embed_documents(
         self,
