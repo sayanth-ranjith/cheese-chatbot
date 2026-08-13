@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -38,6 +39,25 @@ class Settings(BaseSettings):
     jina_model: str = Field(
         default="jina-embeddings-v3",
         validation_alias="JINA_MODEL"
+    )
+
+    # -------------------------------------------------
+    # Knowledge base
+    # -------------------------------------------------
+
+    knowledge_base_dir: Path = Field(
+        default=Path("app/knowledge_base"),
+        validation_alias="KNOWLEDGE_BASE_DIR"
+    )
+
+    chunk_size: int = Field(
+        default=1000,
+        validation_alias="CHUNK_SIZE"
+    )
+
+    chunk_overlap: int = Field(
+        default=200,
+        validation_alias="CHUNK_OVERLAP"
     )
 
     model_config = SettingsConfigDict(
