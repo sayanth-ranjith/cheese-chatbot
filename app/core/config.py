@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     )
 
     groq_model: str = Field(
-        default="llama-3.3-70b-versatile",
+        default="openai/gpt-oss-120b",
         validation_alias="GROQ_MODEL"
     )
 
