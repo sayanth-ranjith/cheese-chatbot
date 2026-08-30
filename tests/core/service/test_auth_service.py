@@ -56,11 +56,12 @@ class FakeTokenService(TokenService):
 
 
 class TestRegister:
-    def test_creates_a_user_with_a_hashed_password(self):
+    @pytest.mark.asyncio
+    async def test_creates_a_user_with_a_hashed_password(self):
         user_store = FakeUserStore()
         service = AuthService(user_store, FakePasswordHasher(), FakeTokenService())
 
-        response = service.register(
+        response = await service.register(
             RegisterRequest(email="Person@Example.com", password="password123")
         )
 
@@ -69,41 +70,53 @@ class TestRegister:
         assert stored is not None
         assert stored.hashed_password == "hashed:password123"
 
-    def test_duplicate_email_raises(self):
+    @pytest.mark.asyncio
+    async def test_duplicate_email_raises(self):
         user_store = FakeUserStore()
         service = AuthService(user_store, FakePasswordHasher(), FakeTokenService())
-        service.register(RegisterRequest(email="person@example.com", password="password123"))
+        await service.register(
+            RegisterRequest(email="person@example.com", password="password123")
+        )
 
         with pytest.raises(EmailAlreadyRegisteredError):
-            service.register(
+            await service.register(
                 RegisterRequest(email="person@example.com", password="different123")
             )
 
 
 class TestLogin:
-    def test_returns_an_access_token_for_correct_credentials(self):
+    @pytest.mark.asyncio
+    async def test_returns_an_access_token_for_correct_credentials(self):
         user_store = FakeUserStore()
         service = AuthService(user_store, FakePasswordHasher(), FakeTokenService())
-        service.register(RegisterRequest(email="person@example.com", password="password123"))
+        await service.register(
+            RegisterRequest(email="person@example.com", password="password123")
+        )
 
-        response = service.login(
+        response = await service.login(
             LoginRequest(email="person@example.com", password="password123")
         )
 
         assert response.access_token.startswith("token-for:")
         assert response.token_type == "bearer"
 
-    def test_wrong_password_raises(self):
+    @pytest.mark.asyncio
+    async def test_wrong_password_raises(self):
         user_store = FakeUserStore()
         service = AuthService(user_store, FakePasswordHasher(), FakeTokenService())
-        service.register(RegisterRequest(email="person@example.com", password="password123"))
+        await service.register(
+            RegisterRequest(email="person@example.com", password="password123")
+        )
 
         with pytest.raises(InvalidCredentialsError):
-            service.login(LoginRequest(email="person@example.com", password="wrong"))
+            await service.login(LoginRequest(email="person@example.com", password="wrong"))
 
-    def test_unknown_email_raises(self):
+    @pytest.mark.asyncio
+    async def test_unknown_email_raises(self):
         user_store = FakeUserStore()
         service = AuthService(user_store, FakePasswordHasher(), FakeTokenService())
 
         with pytest.raises(InvalidCredentialsError):
-            service.login(LoginRequest(email="nobody@example.com", password="password123"))
+            await service.login(
+                LoginRequest(email="nobody@example.com", password="password123")
+            )

@@ -1,5 +1,7 @@
 # app/core/service/auth_service.py
 
+from fastapi.concurrency import run_in_threadpool
+
 from app.core.security.password_hasher import PasswordHasher
 from app.core.security.token_service import TokenService
 from app.core.user_store.user_store import UserStore
@@ -33,27 +35,30 @@ class AuthService:
         self._token_service = token_service
         self._expires_minutes = expires_minutes
 
-    def register(self, request: RegisterRequest) -> RegisterResponse:
+    async def register(self, request: RegisterRequest) -> RegisterResponse:
         email = request.email.lower()
 
-        if self._user_store.get_by_email(email) is not None:
+        existing_user = await run_in_threadpool(self._user_store.get_by_email, email)
+        if existing_user is not None:
             raise EmailAlreadyRegisteredError(f"Email already registered: {email}")
 
-        hashed_password = self._password_hasher.hash(request.password)
-        user = self._user_store.create(email, hashed_password)
+        hashed_password = await run_in_threadpool(
+            self._password_hasher.hash, request.password
+        )
+        user = await run_in_threadpool(self._user_store.create, email, hashed_password)
 
         return RegisterResponse(user_id=user.id, email=user.email)
 
-    def login(self, request: LoginRequest) -> LoginResponse:
+    async def login(self, request: LoginRequest) -> LoginResponse:
         email = request.email.lower()
-        user = self._user_store.get_by_email(email)
+        user = await run_in_threadpool(self._user_store.get_by_email, email)
 
-        if user is None or not self._password_hasher.verify(
-            request.password, user.hashed_password
+        if user is None or not await run_in_threadpool(
+            self._password_hasher.verify, request.password, user.hashed_password
         ):
             raise InvalidCredentialsError("Incorrect email or password")
 
-        access_token = self._token_service.issue(user.id)
+        access_token = await run_in_threadpool(self._token_service.issue, user.id)
 
         return LoginResponse(
             access_token=access_token,
