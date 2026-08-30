@@ -1,9 +1,10 @@
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_groq import ChatGroq
 from pydantic import SecretStr
 
-from app.core.abstract.LanguageModel import LanguageModel
+from app.core.abstract.LanguageModel import ConversationTurn, LanguageModel
 
 CHEESE_ASSISTANT_SYSTEM_PROMPT = """
 You are Cheese Assssistant, a technical aistant for developers using
@@ -38,7 +39,12 @@ class GroqLanguageModel(LanguageModel):
         self._chain = prompt | model | StrOutputParser()
 
 
-    async def generate(self, message: str, context: str = "") -> str:
+    async def generate(
+        self,
+        message: str,
+        context: str = "",
+        history: list[ConversationTurn] | None = None,
+    ) -> str:
         cleaned_message = message.strip()
 
         if not cleaned_message:
@@ -48,14 +54,28 @@ class GroqLanguageModel(LanguageModel):
             {
                 "message": cleaned_message,
                 "context": context.strip() or "No relevant context was found.",
+                "history": self._to_langchain_messages(history or []),
             }
         )
-    
+
+    @staticmethod
+    def _to_langchain_messages(history: list[ConversationTurn]) -> list[BaseMessage]:
+        messages: list[BaseMessage] = []
+
+        for turn in history:
+            if turn.role == "assistant":
+                messages.append(AIMessage(content=turn.content))
+            else:
+                messages.append(HumanMessage(content=turn.content))
+
+        return messages
+
     @staticmethod
     def _create_prompt() -> ChatPromptTemplate:
         return ChatPromptTemplate.from_messages(
             [
                 ("system", CHEESE_ASSISTANT_SYSTEM_PROMPT),
+                MessagesPlaceholder("history"),
                 ("human", "{message}"),
             ]
         )
