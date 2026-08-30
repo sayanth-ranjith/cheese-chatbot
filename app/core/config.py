@@ -83,6 +83,11 @@ class Settings(BaseSettings):
         validation_alias="MONGODB_VECTOR_INDEX"
     )
 
+    mongodb_users_collection: str = Field(
+        default="users",
+        validation_alias="MONGODB_USERS_COLLECTION"
+    )
+
     retrieval_top_k: int = Field(
         default=5,
         validation_alias="RETRIEVAL_TOP_K"
