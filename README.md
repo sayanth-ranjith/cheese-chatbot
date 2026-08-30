@@ -4,14 +4,18 @@ Cheese Chatbot is a work-in-progress AI assistant built to help developers under
 
 The chatbot uses a Retrieval-Augmented Generation (RAG) architecture, where it retrieves relevant information from a knowledge base containing CheeseRetry documentation, source code, and examples before generating responses. This helps provide answers that are grounded in the library rather than relying solely on the language model's pre-trained knowledge.
 
-## Planned Features
+## Features
 
 - Answer frequently asked questions about CheeseRetry
 - Explain APIs and configuration
 - Understand Java code snippets and provide guidance
 - Generate usage examples
 - Retrieve answers directly from the CheeseRetry knowledge base
-- Conversation history using chat sessions
+- User accounts (JWT-based) with persistent, multi-thread conversation history — chat still works anonymously too, memory just isn't saved without logging in
+
+## Planned Features
+
+- Tavily-backed web search for questions outside the knowledge base
 
 ## Tech Stack
 
@@ -54,6 +58,7 @@ This repo includes a `render.yaml` blueprint for deploying to [Render](https://r
    - `GROQ_API_KEY`
    - `JINA_API_KEY`
    - `MONGODB_URI`
+   - `JWT_SECRET_KEY`
 4. Deploy. The service starts with `uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/sayanth-ranjith/cheese-chatbot)

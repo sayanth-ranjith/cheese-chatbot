@@ -8,7 +8,7 @@ Cheese Chatbot is a RAG (Retrieval-Augmented Generation) assistant for the **Che
 
 Tech stack: FastAPI, LangChain, Groq (LLM), Jina (embeddings), MongoDB Atlas + Atlas Vector Search (vector store), Python 3.13, `uv` for dependency management.
 
-This is a personal learning project (first AI project for the author) built incrementally with Claude Code's assistance — expect the codebase to still be evolving rather than fully "finished" (e.g. no dedup on re-ingestion, no conversation history yet).
+This is a personal learning project (first AI project for the author) built incrementally with Claude Code's assistance — expect the codebase to still be evolving rather than fully "finished" (e.g. no dedup on re-ingestion).
 
 ## Commands
 
@@ -45,8 +45,9 @@ Settings load from `.env` via `pydantic-settings` (`app/core/config.py`). These 
 - `GROQ_API_KEY`
 - `JINA_API_KEY`
 - `MONGODB_URI`
+- `JWT_SECRET_KEY` — generate with e.g. `openssl rand -hex 32`
 
-Optional, with defaults: `GROQ_MODEL` (`openai/gpt-oss-120b`), `JINA_MODEL` (`jina-embeddings-v3`), `KNOWLEDGE_BASE_DIR` (`app/knowledge_base`), `CHUNK_SIZE` (1000), `CHUNK_OVERLAP` (200), `MONGODB_DB_NAME` (`cheese_chatbot`), `MONGODB_COLLECTION` (`kb_chunks`), `MONGODB_VECTOR_INDEX` (`kb_vector_index`), `RETRIEVAL_TOP_K` (5).
+Optional, with defaults: `GROQ_MODEL` (`openai/gpt-oss-120b`), `JINA_MODEL` (`jina-embeddings-v3`), `KNOWLEDGE_BASE_DIR` (`app/knowledge_base`), `CHUNK_SIZE` (1000), `CHUNK_OVERLAP` (200), `MONGODB_DB_NAME` (`cheese_chatbot`), `MONGODB_COLLECTION` (`kb_chunks`), `MONGODB_VECTOR_INDEX` (`kb_vector_index`), `RETRIEVAL_TOP_K` (5), `MONGODB_USERS_COLLECTION` (`users`), `MONGODB_CONVERSATIONS_COLLECTION` (`conversations`), `MONGODB_MESSAGES_COLLECTION` (`conversation_messages`), `BCRYPT_ROUNDS` (12), `JWT_ALGORITHM` (`HS256`), `JWT_EXPIRES_MINUTES` (10080, 7 days), `CONVERSATION_RETENTION_DAYS` (30), `CONVERSATION_HISTORY_LIMIT` (10).
 
 This app has no offline/mocked mode for its external dependencies — it talks to real Groq, Jina, and MongoDB Atlas services. There is no local Mongo fallback; Atlas Vector Search specifically requires an Atlas-hosted cluster (a plain local `mongod` doesn't support `$vectorSearch`).
 
@@ -63,6 +64,8 @@ When adding a new implementation of an existing abstraction (e.g. swapping the v
 2. **Chat / retrieval** (`ChatService`, triggered via `POST /api/v1/ask/cheese`): `RetrievalService` embeds the incoming query (`EmbeddingModel.embed_query`) and runs `VectorStore.similarity_search()` (a MongoDB `$vectorSearch` aggregation against the `kb_vector_index` Atlas Search index on the `embedding` field, cosine similarity, 1024 dims for Jina v3) to get top-k `VectorSearchResult`s. Their `content` is joined into a `context` string that gets injected into `GroqLanguageModel`'s system prompt (`app/core/llm/groq_language_model.py`), so answers are meant to be grounded only in retrieved context; `ChatResponse.sources` lists the originating file names.
 
 **The Atlas Vector Search index is not managed by application code/migrations** — it's a cloud-side resource created once via `pymongo`'s `collection.create_search_index()` (or the Atlas UI's "Search Indexes" tab, which is separate from the regular "Indexes" tab). If retrieval starts returning nothing, check that `kb_vector_index` still exists and is `queryable` on the `kb_chunks` collection before assuming it's an app bug.
+
+**Auth and per-user conversation memory.** Registration/login (`app/api/v1/auth_routers.py`, `AuthService`) issue a 7-day JWT (`JwtTokenService`, PyJWT/HS256, no refresh token) against a `users` collection with a unique index on `email`. Chat auth is **optional, not required**: `POST /api/v1/ask/cheese` still works fully anonymously exactly as before (`conversation_id` stays `null`), but a valid `Authorization: Bearer <jwt>` additionally persists that turn into a named conversation thread (multiple threads per user, ChatGPT-sidebar style — not one rolling history) and feeds recent turns back into the Groq prompt via `LanguageModel.generate(..., history=...)`. The auth dependency (`app/core/auth_config.py`, built on `HTTPBearer(auto_error=False)`) is deliberately asymmetric: a fully absent header falls through to anonymous, but a *present-and-invalid* token 401s rather than silently downgrading — don't "fix" this into always-401-on-missing or always-fall-back-on-invalid, both break the intended behavior. Conversation ownership checks (`ensure_conversation_owned` in `app/core/conversation_store/conversation_store.py`) collapse "conversation doesn't exist" and "belongs to another user" into the same `ConversationNotFoundError` → 404, so a non-owner can't use the response to fingerprint valid conversation ids. Both `conversations` and `conversation_messages` carry a native MongoDB **TTL index** (`CONVERSATION_RETENTION_DAYS`, default 30) — retention is self-maintaining via Mongo's background reaper, there is no cron job or app-level cleanup code to look for.
 
 ## Claude x Codex
 
