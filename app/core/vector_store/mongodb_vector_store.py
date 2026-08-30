@@ -1,3 +1,4 @@
+import certifi
 from pymongo import MongoClient
 
 from app.core.vector_store.vector_store import VectorSearchResult, VectorStore
@@ -14,7 +15,10 @@ class MongoDBVectorStore(VectorStore):
         collection_name: str,
         index_name: str = "kb_vector_index",
     ) -> None:
-        self._client: MongoClient = MongoClient(uri)
+        # Some hosting platforms ship a system CA bundle that fails TLS
+        # negotiation with Atlas (SSL: TLSV1_ALERT_INTERNAL_ERROR); pinning
+        # certifi's bundle avoids relying on the host's CA store.
+        self._client: MongoClient = MongoClient(uri, tlsCAFile=certifi.where())
         self._collection = self._client[db_name][collection_name]
         self._index_name = index_name
 
