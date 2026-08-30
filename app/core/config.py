@@ -88,6 +88,26 @@ class Settings(BaseSettings):
         validation_alias="MONGODB_USERS_COLLECTION"
     )
 
+    mongodb_conversations_collection: str = Field(
+        default="conversations",
+        validation_alias="MONGODB_CONVERSATIONS_COLLECTION"
+    )
+
+    mongodb_messages_collection: str = Field(
+        default="conversation_messages",
+        validation_alias="MONGODB_MESSAGES_COLLECTION"
+    )
+
+    conversation_retention_days: int = Field(
+        default=30,
+        validation_alias="CONVERSATION_RETENTION_DAYS"
+    )
+
+    conversation_history_limit: int = Field(
+        default=10,
+        validation_alias="CONVERSATION_HISTORY_LIMIT"
+    )
+
     retrieval_top_k: int = Field(
         default=5,
         validation_alias="RETRIEVAL_TOP_K"
