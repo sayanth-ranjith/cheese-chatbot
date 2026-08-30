@@ -20,16 +20,12 @@ def create_application() -> FastAPI:
         version=settings.app_version,
         debug=settings.debug,
     )
-    # Allows the separately-hosted React dev server (cheese-chatbot-ui,
-    # Vite's default ports) to call this API cross-origin.
+    # Allows the separately-hosted React frontend (cheese-chatbot-ui) to call
+    # this API cross-origin. Configurable via CORS_ALLOWED_ORIGINS so the
+    # deployed frontend's origin can be added without a code change.
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=[
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-            "http://localhost:5174",
-            "http://127.0.0.1:5174",
-        ],
+        allow_origins=settings.cors_allowed_origins_list,
         allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],
