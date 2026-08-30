@@ -88,6 +88,15 @@ class Settings(BaseSettings):
         validation_alias="RETRIEVAL_TOP_K"
     )
 
+    # -------------------------------------------------
+    # Security
+    # -------------------------------------------------
+
+    bcrypt_rounds: int = Field(
+        default=12,
+        validation_alias="BCRYPT_ROUNDS"
+    )
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
