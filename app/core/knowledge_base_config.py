@@ -6,7 +6,13 @@ from typing import Annotated
 from fastapi import Depends
 
 from app.core.config import Settings, get_settings
+from app.core.document_loader.composite_document_loader import (
+    CompositeDocumentLoader,
+)
 from app.core.document_loader.document_loader import DocumentLoader
+from app.core.document_loader.html_directory_document_loader import (
+    HtmlDirectoryDocumentLoader,
+)
 from app.core.document_loader.markdown_directory_document_loader import (
     MarkdownDirectoryDocumentLoader,
 )
@@ -25,8 +31,15 @@ from app.core.vector_store.vector_store import VectorStore
 def get_document_loader() -> DocumentLoader:
     settings: Settings = get_settings()
 
-    return MarkdownDirectoryDocumentLoader(
-        directory_path=settings.knowledge_base_dir,
+    return CompositeDocumentLoader(
+        loaders=[
+            MarkdownDirectoryDocumentLoader(
+                directory_path=settings.knowledge_base_dir,
+            ),
+            HtmlDirectoryDocumentLoader(
+                directory_path=settings.knowledge_base_dir,
+            ),
+        ]
     )
 
 
