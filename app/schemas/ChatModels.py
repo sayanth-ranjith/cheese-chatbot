@@ -9,3 +9,4 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     message_id: str
+    sources: list[str] = []

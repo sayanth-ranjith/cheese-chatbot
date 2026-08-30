@@ -15,6 +15,9 @@ Your responsibilities:
 - Never invent CheeseRetry classes, methods, configuration, or behavior.
 - Clearly state when the available information is insufficient.
 - Prefer concise explanations with practical Java examples when relevant.
+
+Context:
+{context}
 """.strip()
 
 class GroqLanguageModel(LanguageModel):
@@ -35,14 +38,17 @@ class GroqLanguageModel(LanguageModel):
         self._chain = prompt | model | StrOutputParser()
 
 
-    async def generate(self, message: str) -> str:
+    async def generate(self, message: str, context: str = "") -> str:
         cleaned_message = message.strip()
 
         if not cleaned_message:
             raise ValueError("Message must not be empty")
 
         return await self._chain.ainvoke(
-            {"message": cleaned_message}
+            {
+                "message": cleaned_message,
+                "context": context.strip() or "No relevant context was found.",
+            }
         )
     
     @staticmethod

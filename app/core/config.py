@@ -83,6 +83,11 @@ class Settings(BaseSettings):
         validation_alias="MONGODB_VECTOR_INDEX"
     )
 
+    retrieval_top_k: int = Field(
+        default=5,
+        validation_alias="RETRIEVAL_TOP_K"
+    )
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
