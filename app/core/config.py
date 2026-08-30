@@ -60,6 +60,29 @@ class Settings(BaseSettings):
         validation_alias="CHUNK_OVERLAP"
     )
 
+    # -------------------------------------------------
+    # MongoDB
+    # -------------------------------------------------
+
+    mongodb_uri: SecretStr = Field(
+        validation_alias="MONGODB_URI"
+    )
+
+    mongodb_db_name: str = Field(
+        default="cheese_chatbot",
+        validation_alias="MONGODB_DB_NAME"
+    )
+
+    mongodb_collection: str = Field(
+        default="kb_chunks",
+        validation_alias="MONGODB_COLLECTION"
+    )
+
+    mongodb_vector_index: str = Field(
+        default="kb_vector_index",
+        validation_alias="MONGODB_VECTOR_INDEX"
+    )
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
