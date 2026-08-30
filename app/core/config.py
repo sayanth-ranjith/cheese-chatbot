@@ -97,6 +97,20 @@ class Settings(BaseSettings):
         validation_alias="BCRYPT_ROUNDS"
     )
 
+    jwt_secret_key: SecretStr = Field(
+        validation_alias="JWT_SECRET_KEY"
+    )
+
+    jwt_algorithm: str = Field(
+        default="HS256",
+        validation_alias="JWT_ALGORITHM"
+    )
+
+    jwt_expires_minutes: int = Field(
+        default=10080,
+        validation_alias="JWT_EXPIRES_MINUTES"
+    )
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
