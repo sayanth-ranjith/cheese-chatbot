@@ -7,6 +7,8 @@ from fastapi import Depends
 
 from app.core.abstract.LanguageModel import LanguageModel
 from app.core.config import Settings, get_settings
+from app.core.conversation_config import get_conversation_store
+from app.core.conversation_store.conversation_store import ConversationStore
 from app.core.embedding_config import get_embedding_model
 from app.core.embedding_model.embedding_model import EmbeddingModel
 from app.core.knowledge_base_config import get_vector_store
@@ -46,13 +48,19 @@ def get_chat_service(
         RetrievalService,
         Depends(get_retrieval_service),
     ],
+    conversation_store: Annotated[
+        ConversationStore,
+        Depends(get_conversation_store),
+    ],
 ) -> ChatService:
     settings: Settings = get_settings()
 
     return ChatService(
         language_model=language_model,
         retrieval_service=retrieval_service,
+        conversation_store=conversation_store,
         top_k=settings.retrieval_top_k,
+        history_limit=settings.conversation_history_limit,
     )
 
 
