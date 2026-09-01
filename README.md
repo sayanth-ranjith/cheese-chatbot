@@ -1,5 +1,7 @@
 # 🧀 Cheese Chatbot
 
+Checkout - https://cheese-chatbot-ui.vercel.app/
+
 Cheese Chatbot is a work-in-progress AI assistant built to help developers understand and use the **CheeseRetry** library.
 
 The chatbot uses a Retrieval-Augmented Generation (RAG) architecture, where it retrieves relevant information from a knowledge base containing CheeseRetry documentation, source code, and examples before generating responses. This helps provide answers that are grounded in the library rather than relying solely on the language model's pre-trained knowledge.
