@@ -65,7 +65,7 @@ This repo includes a `render.yaml` blueprint for deploying to [Render](https://r
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/sayanth-ranjith/cheese-chatbot)
 
-**Note:** Render's free tier spins the service down after ~15 minutes of inactivity; the next request will take 30-50s to cold-start.
+**Note:** Render's free tier spins the service down after ~15 minutes of inactivity; the next request will take 30-50s to cold-start.We might need to have a scheduler run every 5 mins for this purpose.
 
 ## Claude x Codex
 
